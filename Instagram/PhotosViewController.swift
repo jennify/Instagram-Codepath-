@@ -20,7 +20,6 @@ class PhotosViewController: UIViewController, UITableViewDataSource, UITableView
         tableView.delegate = self
         tableView.rowHeight = 320;
 
-        print("View did load:)")
         let clientId = "e05c462ebd86446ea48a5af73769b602"
         let url = NSURL(string:"https://api.instagram.com/v1/media/popular?client_id=\(clientId)")
         let request = NSURLRequest(URL: url!)
@@ -36,7 +35,6 @@ class PhotosViewController: UIViewController, UITableViewDataSource, UITableView
                     if let responseDictionary = try! NSJSONSerialization.JSONObjectWithData(
                     data, options:[]) as? NSDictionary {
                         self.data = responseDictionary["data"] as! [NSDictionary]
-//                        print(self.data)
                         self.tableView.reloadData()
                         
                     }
@@ -58,16 +56,32 @@ class PhotosViewController: UIViewController, UITableViewDataSource, UITableView
             let data = self.data![indexPath.row]
             let url = data["caption"]!["from"]!!["profile_picture"] as! String
             cell.photoImageView.setImageWithURL(NSURL(string: url)!)
-            print(url)
         }
-        
-        
         return cell
     }
     
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 10
-        //        return self.data!.count
+        if let data = self.data {
+            return data.count
+        } else {
+            return 0
+        }
+
+        
+    }
+    
+    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+        let vc = segue.destinationViewController as! PhotoDetailsViewController
+        let indexPath = tableView.indexPathForCell(sender as! UITableViewCell)
+        if  self.data != nil {
+            let data = self.data![indexPath!.row]
+            let url = data["caption"]!["from"]!!["profile_picture"] as! String
+            vc.photo_url = url
+        }
+    }
+    
+    func tableView(tableView: UITableView, didDeselectRowAtIndexPath indexPath: NSIndexPath) {
+        tableView.deselectRowAtIndexPath(indexPath, animated:true)
     }
 
 
