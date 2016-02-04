@@ -52,10 +52,14 @@ class PhotosViewController: UIViewController, UITableViewDataSource, UITableView
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCellWithIdentifier("com.codepath.PrototypeCell", forIndexPath: indexPath) as! TableViewCell
-        if  self.data != nil {
-            let data = self.data![indexPath.row]
-            let url = data["caption"]!["from"]!!["profile_picture"] as! String
-            cell.photoImageView.setImageWithURL(NSURL(string: url)!)
+        if  let data = self.data {
+            let data_row = data[indexPath.row]
+            let caption_field = data_row["caption"] as? NSDictionary
+            let from_field = caption_field!["from"] as? NSDictionary
+            let url = from_field!["profile_picture"] as? String
+            // In memory of our janky code:
+            // let url = data["caption"]!["from"]!!["profile_picture"] as! String
+            cell.photoImageView.setImageWithURL(NSURL(string: url!)!)
         }
         return cell
     }
